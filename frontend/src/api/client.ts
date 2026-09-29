@@ -8,16 +8,37 @@ import type {
 
 const BASE = "https://atr-h2-reactor-2d.onrender.com/api";
 
-async function jsonFetch<T>(url: string, opts?: RequestInit): Promise<T> {
-  const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
-    ...opts,
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.message || body.error || `HTTP ${res.status}`);
+async function jsonFetch<T>(
+  url: string,
+  opts?: RequestInit,
+  timeoutMs = 90000, // Límite de 90 segundos para tolerar el cold start de Render
+): Promise<T> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+      ...opts,
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.message || body.error || `HTTP ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (error: any) {
+    if (error.name === "AbortError") {
+      throw new Error(
+        "La simulación tardó demasiado en responder (timeout de conexión al servidor). Por favor intenta de nuevo.",
+      );
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  return res.json();
 }
 
 export function fetchCatalysts(): Promise<{ catalysts: CatalystInfo[] }> {
