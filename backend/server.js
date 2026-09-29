@@ -31,9 +31,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'internal_error', message: err.message });
 });
 
-app.listen(PORT, () => {
+// Se especifica '0.0.0.0' para que Render pueda enrutar el tráfico externo al contenedor
+app.listen(PORT, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
-  console.log(`ATR H2 Reactor 2D backend escuchando en http://localhost:${PORT}`);
+  console.log(`ATR H2 Reactor 2D backend escuchando en el puerto ${PORT}`);
 });
 
 module.exports = app;
