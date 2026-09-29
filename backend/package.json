@@ -1,0 +1,24 @@
+{
+  "name": "atr-h2-reactor-2d-backend",
+  "version": "1.0.0",
+  "description": "Backend numerico (Node.js/Express) para el modelo 2D axisimetrico no isotermico de un reactor de lecho empacado para produccion de H2 por reformado autotermico (ATR) de bioetanol. Resuelve el sistema de EDPs por el Metodo de Lineas (MOL) con cinetica LHHW.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test:solver": "node src/solver/selftest.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "install-all": "npm install --prefix backend && npm install --prefix frontend",
+    "dev": "concurrently \"npm start --prefix backend\" \"npm run dev --prefix frontend\""
+  }
+}
