@@ -1,12 +1,16 @@
 import type {
-  CatalystInfo, SimulationInputs, SimulationResult, SensitivityResult, InverseYieldResult,
-} from '../types';
+  CatalystInfo,
+  SimulationInputs,
+  SimulationResult,
+  SensitivityResult,
+  InverseYieldResult,
+} from "../types";
 
-const BASE = '/api';
+const BASE = "https://atr-h2-reactor-2d.onrender.com/api";
 
 async function jsonFetch<T>(url: string, opts?: RequestInit): Promise<T> {
   const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
     ...opts,
   });
   if (!res.ok) {
@@ -20,19 +24,27 @@ export function fetchCatalysts(): Promise<{ catalysts: CatalystInfo[] }> {
   return jsonFetch(`${BASE}/catalysts`);
 }
 
-export function runSimulation(inputs: SimulationInputs): Promise<SimulationResult> {
+export function runSimulation(
+  inputs: SimulationInputs,
+): Promise<SimulationResult> {
   return jsonFetch(`${BASE}/simulate`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(inputs),
   });
 }
 
 export function fetchSensitivity(params: {
-  param: string; catalyst: string; T_in_C: number; P_in_bar: number;
-  O2_EtOH: number; S_E: number; W_F_EtOH: number; points?: number;
+  param: string;
+  catalyst: string;
+  T_in_C: number;
+  P_in_bar: number;
+  O2_EtOH: number;
+  S_E: number;
+  W_F_EtOH: number;
+  points?: number;
 }): Promise<SensitivityResult> {
   return jsonFetch(`${BASE}/sensitivity`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(params),
   });
 }
@@ -45,11 +57,15 @@ export function fetchHistory(limit = 20) {
 // de alimentacion que lo produce (dejando fijas las demas variables) y
 // devuelve la corrida completa del solver en esa temperatura.
 export function solveForYield(params: {
-  catalyst: string; P_in_bar: number; O2_EtOH: number; S_E: number; W_F_EtOH: number;
+  catalyst: string;
+  P_in_bar: number;
+  O2_EtOH: number;
+  S_E: number;
+  W_F_EtOH: number;
   targetYH2Pct: number;
 }): Promise<InverseYieldResult> {
   return jsonFetch(`${BASE}/inverse-yield`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(params),
   });
 }
